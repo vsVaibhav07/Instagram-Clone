@@ -1,0 +1,37 @@
+# Node modules (frontend and backend)
+frontend/node_modules/
+backend/node_modules/
+
+# Build folders
+frontend/build/
+backend/dist/
+
+# Environment variables
+*.env
+frontend/.env
+backend/.env
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode settings folder
+.vscode/
+
+# Optional: coverage reports (if using testing tools)
+coverage/
+
+# Optional: npm package-lock or yarn lock files if you want to ignore
+# package-lock.json
+# yarn.lock
+
+# Misc
+*.pem
+*.key
