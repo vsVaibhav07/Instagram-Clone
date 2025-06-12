@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { readFileAsDataUrl } from '@/lib/utils';
+import { setPosts } from '@/redux/postSlice';
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
-import { useDispatch, useSelector } from 'react-redux';
-import { readFileAsDataUrl } from '@/lib/utils';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { setPosts } from '@/redux/postSlice';
+import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 
 const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
   const imageRef = useRef();
@@ -68,7 +68,7 @@ const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
     <Dialog open={openCreatePostDialog}>
       <DialogContent
         onInteractOutside={() => setOpenCreatePostDialog(false)}
-        className="bg-white w-full max-w-xl p-6 rounded-2xl space-y-4"
+        className="bg-white  w-full max-w-xl p-6 rounded-2xl space-y-4"
       >
         <DialogTitle className="text-xl font-bold text-center">Create New Post</DialogTitle>
 
@@ -98,7 +98,7 @@ const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-full max-h-96 object-cover rounded-lg"
+            className="w-full max-h-72 object-cover rounded-lg"
           />
         )}
 

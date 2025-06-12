@@ -19,23 +19,30 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
-import { setPosts } from "@/redux/postSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { Badge } from "./ui/badge";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
   const [openComments, setOpenComments] = useState(false);
   const { user } = useSelector((store) => store.auth);
-  const { posts } = useSelector((store) => store.post);
+  const { posts,selectedPost } = useSelector((store) => store.post);
+  
   const dispatch = useDispatch();
-  const [liked, setLiked] = useState(post.likes.includes(user._id) || false);
+  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [likeCount, setLikeCount] = useState(post?.likes.length);
 
+  const [comments,setComments]=useState(selectedPost?.comments);
+
+  const [bookmarked,setBookmarked]=useState(user?.bookmarks?.includes(post?._id));
+
   const likeOrDislikeHandler = async () => {
-    if (!post) return;
+    try {
+       if (!post) return;
     const action = liked ? "dislike" : "like";
     const res = await axios.get(
-      `http://localhost:8000/api/v1/post/${post._id}/${action}`,
+      `http://localhost:8000/api/v1/post/${post?._id}/${action}`,
       { withCredentials: true }
     );
     if (res.data.success) {
@@ -54,7 +61,57 @@ const Post = ({ post }) => {
       });
       toast.success(res.data.message);
     }
+      
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+   
   };
+
+  const commentHandler=async()=>{
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/post/${post?._id}/comment`,{text},{
+          headers:{
+            'Content-Type':'application/json'
+          },
+          withCredentials: true 
+        }
+      )
+
+      if(res.data.success){
+        const updatedComments=[...comments,res.data.comment];
+        setComments(updatedComments);
+        const updatedPosts=posts.map(p=>
+          p._id=== selectedPost._id?{...p,comments:updatedComments}:p
+        );
+
+        dispatch(setPosts(updatedPosts));
+        
+        setText("");
+        toast.success(res.data.message);
+        
+      }
+      
+    } catch (error) {
+      console.log("error", error);
+      toast.error(error.response.data.message);
+    }
+  }
+
+  const bookmarkHandler=async()=>{
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`, { withCredentials: true });
+        if(res.data.success){
+           setBookmarked((prev)=>!prev);
+           toast.success(res.data.message)
+        }
+       
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  }
 
   const deletePostHandler = async () => {
     try {
@@ -70,7 +127,6 @@ const Post = ({ post }) => {
         dispatch(setPosts(updatedPosts));
       }
     } catch (error) {
-      console.log("error", error);
       toast.error(error.response.data.message);
     }
   };
@@ -92,7 +148,12 @@ const Post = ({ post }) => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="font-semibold text-sm">{post.author.username}</h1>
+            <div className="flex gap-1">
+              <h1 className="font-semibold text-sm">{post?.author.username}</h1>
+              {user?._id===post?.author._id &&
+            <Badge className="bg-slate-100">Author</Badge>}
+            </div>
+            
             <p className="text-xs text-gray-500">Original audio</p>
           </div>
         </div>
@@ -104,14 +165,15 @@ const Post = ({ post }) => {
           <DialogTitle className="hidden"></DialogTitle>
 
           <DialogContent className="bg-white w-[30%]">
-            <Button className="cursor-pointer hover:bg-slate-200">
-              Unfollow
-            </Button>
+            {post?.author._id!==user?._id?( <Button className="cursor-pointer hover:bg-slate-200"> { user?.following.includes(post?.author._id)?"Unfollow":"Follow"}
+  
+            </Button>):""}
+           
             <Button className="cursor-pointer hover:bg-slate-200">
               Add to favorites
             </Button>
             <DialogClose asChild>
-              {user && user._id === post.author._id && (
+              {user && user?._id === post?.author._id && (
                 <Button
                   onClick={async () => await deletePostHandler()}
                   className="cursor-pointer hover:bg-slate-200"
@@ -136,19 +198,19 @@ const Post = ({ post }) => {
               className="w-6 h-6 hover:text-gray-500 cursor-pointer transition-colors"
             />
             <MessageCircle
-              onClick={() => setOpenComments(true)}
+              onClick={() => { dispatch(setSelectedPost(post));  setOpenComments(true)}}
               className="w-6 h-6 hover:text-gray-500 cursor-pointer transition-colors"
             />
             <Send className="w-6 h-6 hover:text-gray-500 cursor-pointer transition-colors" />
           </div>
-          <Bookmark className="w-6 h-6 hover:text-gray-500 cursor-pointer transition-colors" />
+          <Bookmark fill={bookmarked?"black":"transparent"} onClick={bookmarkHandler} className="w-6 h-6 hover:text-gray-500 cursor-pointer transition-colors" />
         </div>
         <p className="text-sm">
           {likeCount > 0 && (
             <>
               Liked by{" "}
               <span className="font-bold">
-                {liked ? user.username : post.author.username}
+                {liked ? "You" : post?.author.username}
               </span>{" "}
               {likeCount > 1 && (
                 <>
@@ -161,25 +223,35 @@ const Post = ({ post }) => {
 
         <p className="text-sm">
           {" "}
-          <span className="font-bold pr-1">{post.author.username}</span>
-          {post.caption}
+          <span className="font-bold pr-1">{post?.author.username}</span>
+          {post?.caption}
         </p>
 
-        <p
+        <div
           onClick={() => setOpenComments(true)}
           className="text-gray-600 cursor-pointer"
         >
-          View all 10 comments
-        </p>
+          {post.comments.length>0 &&(
+          <div onClick={() => { dispatch(setSelectedPost(post));  setOpenComments(true)}}>
+           View {post?.comments.length>1?<span> all {post?.comments.length} comments</span>:"1 Comment" }  
+          </div>
+          )
+          }
+         
+        </div>
         <CommentDialog
           openComments={openComments}
           setOpenComments={setOpenComments}
           text={text}
           setText={setText}
           handleTextChange={handleTextChange}
+          commentHandler={commentHandler}
+          comments={comments}
+          setComments={setComments}
         />
         <div className="flex justify-between">
           <input
+         
             value={text}
             onChange={(e) => handleTextChange(e)}
             className="w-full focus:outline-none"
@@ -187,7 +259,7 @@ const Post = ({ post }) => {
             placeholder="Add a comment"
           />
           {text ? (
-            <span className="text-blue-400 cursor-pointer">Post</span>
+            <span  onClick={commentHandler} className="text-blue-400 cursor-pointer">Post</span>
           ) : (
             ""
           )}

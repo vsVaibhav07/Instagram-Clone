@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,6 +7,7 @@ import { Instagram ,Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -14,9 +15,16 @@ const Signup = () => {
     email: '',
     password: ''
   });
+  const {user}=useSelector(store=>store.auth);
 
   const navigate=useNavigate();
   const [loading,setLoading]=useState(false);
+
+  useEffect(()=>{
+    if(user){
+    navigate('/');
+    }
+  },[])
 
   const handleChange = (e) => {
     setFormData(prev => ({

@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import Post from "../models/post.model.js"
+import cloudinary from '../utils/cloudinary.js';
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken"
 import getDataUri from "../utils/datauri.js";
@@ -122,7 +123,7 @@ export const logout=async(_,res)=>{
 export const getProfile=async (req,res)=>{
     try {
         const userId=req.params.id;
-        let user= await User.findById(userId).select("-password");
+        let user= await User.findById(userId).select("-password").populate({path:"posts"}).populate({path:"bookmarks"});
         return res.status(200).json({
             user,
             success:true
