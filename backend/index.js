@@ -7,7 +7,12 @@ import { app,server } from './socketIO/socketIO.js';
 import messageRoute from './routes/message.route.js';
 import dotenv from 'dotenv'
 import connectDb from './utils/db.js';
+import path from 'path';
 dotenv.config({})
+
+
+const __dirname=path.resolve();
+console.log(__dirname)
 
 
 app.use(cors( {

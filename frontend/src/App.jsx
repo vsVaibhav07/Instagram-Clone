@@ -57,7 +57,7 @@ function App() {
       dispatch(setSocket(socketIo));
 
        socketIo.on('connect', () => {
-      console.log("🔁 Reconnected with socket ID:", socketIo.id);
+      
     });
 
       socketIo.on('getOnlineUsers', (onlineUsers) => {
@@ -65,7 +65,7 @@ function App() {
       });
 
       socketIo.on('notification',(notification)=>{
-         console.log("🔔 Received notification from backend:", notification)
+        
         dispatch(setLikeNotification(notification));
       })
     }
