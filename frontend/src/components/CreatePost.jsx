@@ -1,22 +1,22 @@
-import { readFileAsDataUrl } from '@/lib/utils';
-import { setPosts } from '@/redux/postSlice';
-import axios from 'axios';
-import { Loader2 } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'sonner';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
+import { readFileAsDataUrl } from "@/lib/utils";
+import { setPosts } from "@/redux/postSlice";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
 const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
   const imageRef = useRef();
-  const [imagePreview, setImagePreview] = useState('');
-  const [file, setFile] = useState('');
-  const [caption, setCaption] = useState('');
+  const [imagePreview, setImagePreview] = useState("");
+  const [file, setFile] = useState("");
+  const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch=useDispatch();
-  const {posts}=useSelector(store=>store.post);
+  const dispatch = useDispatch();
+  const { posts } = useSelector((store) => store.post);
 
   const { user } = useSelector((store) => store.auth);
 
@@ -31,34 +31,38 @@ const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
 
   const createPostHandler = async () => {
     if (!file) {
-      toast.error('Media required');
+      toast.error("Media required");
       return;
     }
 
     const formData = new FormData();
-    formData.append('caption', caption);
-    if(imagePreview) formData.append("image",file)
-    
+    formData.append("caption", caption);
+    if (imagePreview) formData.append("image", file);
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:8000/api/v1/post/addpost', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        withCredentials: true,
-      });
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/post/addpost`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
-        dispatch(setPosts([res.data.post,...posts]));
+        dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);
         setOpenCreatePostDialog(false);
-        setCaption('');
-        setImagePreview('');
-        setFile('');
+        setCaption("");
+        setImagePreview("");
+        setFile("");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to create post');
+      toast.error(error.response?.data?.message || "Failed to create post");
     } finally {
       setLoading(false);
     }
@@ -70,12 +74,14 @@ const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
         onInteractOutside={() => setOpenCreatePostDialog(false)}
         className="bg-white  w-full max-w-xl p-6 rounded-2xl space-y-4"
       >
-        <DialogTitle className="text-xl font-bold text-center">Create New Post</DialogTitle>
+        <DialogTitle className="text-xl font-bold text-center">
+          Create New Post
+        </DialogTitle>
 
         {/* User info */}
         <div className="flex items-center gap-3">
           <Avatar>
-            <AvatarImage src={user?.profilePicture || '/defaultDP.webp'} />
+            <AvatarImage src={user?.profilePicture || "/defaultDP.webp"} />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <div>
@@ -131,7 +137,7 @@ const CreatePost = ({ openCreatePostDialog, setOpenCreatePostDialog }) => {
                 Posting...
               </>
             ) : (
-              'Post'
+              "Post"
             )}
           </Button>
         </div>

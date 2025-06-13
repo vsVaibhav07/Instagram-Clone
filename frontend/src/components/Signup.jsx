@@ -38,7 +38,7 @@ const Signup = () => {
     console.log('Form Data:', formData);
     try {
         setLoading(true);
-        const res=await axios.post('http://localhost:8000/api/v1/user/register', formData,{headers:{'Content-Type': 'application/json'},withCredentials:true});
+        const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/register`, formData,{headers:{'Content-Type': 'application/json'},withCredentials:true});
         if(res.data.success){
             navigate('/login');
             toast.success(res.data.message);

@@ -21,7 +21,7 @@ const Messages = () => {
 
   const sendMessageHandler=async(receiverId)=>{
     try {
-      const res=await axios.post(`http://localhost:8000/api/v1/message/send/${receiverId}`,{messageText},{
+      const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/message/send/${receiverId}`,{messageText},{
         headers:{
           'Content-Type':'application/json'
         },
