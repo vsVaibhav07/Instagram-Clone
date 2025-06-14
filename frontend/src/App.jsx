@@ -47,7 +47,7 @@ function App() {
 
   useEffect(() => {
     if (user && !socketRef.current) {
-      const socketIo = io('http://localhost:8000', {
+      const socketIo = io(`${import.meta.env.VITE_BACKEND_URL}`, {
         query: { userId: user._id },
         transports: ['websocket'],
       });

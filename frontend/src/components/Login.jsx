@@ -36,7 +36,7 @@ const Login = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
+  
     try {
         setLoading(true);
         const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/login`, formData,{headers:{'Content-Type': 'application/json'},withCredentials:true});
