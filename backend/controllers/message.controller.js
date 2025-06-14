@@ -5,15 +5,15 @@ import { getUserSocketId, io } from "../socketIO/socketIO.js";
 export const sendMessage = async (req, res) => {
     try {
         const senderId = req.id;
-        const receiverId=req.params.id;
-        const { messageText:message } = req.body;
+        const receiverId = req.params.id;
+        const { messageText: message } = req.body;
 
-        let conversation =await Conversation.findOne({
+        let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] }
         });
 
-        if(!conversation){
-            conversation =await Conversation.create({
+        if (!conversation) {
+            conversation = await Conversation.create({
                 participants: [senderId, receiverId]
             });
         }
@@ -23,22 +23,27 @@ export const sendMessage = async (req, res) => {
             receiverId,
             message
         });
-        if(newMessage) conversation.messages.push(newMessage._id);
-        await Promise.all([conversation.save(),newMessage.save()]);
-        
+        if (newMessage) conversation.messages.push(newMessage._id);
+        await Promise.all([conversation.save(), newMessage.save()]);
+
         //implement socketId for real Time Messaging
 
-        const receiverSocketId=getUserSocketId(receiverId);
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit('newMessage',newMessage);
+        const receiverSocketSet = getUserSocketId(receiverId);
+       
+
+        if (receiverSocketSet) {
+            for (const receiverSocketId of receiverSocketSet) {
+                io.to(receiverSocketId).emit('newMessage', newMessage);
+            }
+
         }
-        
+
         return res.status(200).json({
-           success:true,
-           newMessage
+            success: true,
+            newMessage
         });
-        
-        
+
+
     } catch (error) {
         console.error("Error sending message:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -49,16 +54,16 @@ export const sendMessage = async (req, res) => {
 export const getMessages = async (req, res) => {
     try {
         const senderId = req.id;
-        const receiverId=req.params.id;
+        const receiverId = req.params.id;
 
-        const conversation=await Conversation.findOne({
+        const conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] }
         }).populate('messages');
-        if(!conversation) {
-            return res.status(404).json({ message: "New Conversation",success:true,messages: [] });
+        if (!conversation) {
+            return res.status(404).json({ message: "New Conversation", success: true, messages: [] });
         }
         return res.status(200).json({
-            success:true,
+            success: true,
             messages: conversation?.messages
         });
     } catch (error) {

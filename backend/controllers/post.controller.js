@@ -83,7 +83,6 @@ export const likePost = async (req, res) => {
         });
         await post.save();
 
-        console.log("✅ Post updated with like by:", likeKarneWaleUserKiId);
 
         // Socket notification section
         const user = await User.findById(likeKarneWaleUserKiId).select('username profilePicture');
@@ -104,7 +103,7 @@ export const likePost = async (req, res) => {
 
             const postOwnerSocketSet = getUserSocketId(postOwnerId);
 
-            console.log("📦 postOwnerSocketSet:", postOwnerSocketSet);
+            
 
             if (postOwnerSocketSet instanceof Set && postOwnerSocketSet.size > 0) {
                 console.log("📢 Sending notification to socket IDs:", [...postOwnerSocketSet]);

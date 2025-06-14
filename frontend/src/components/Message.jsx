@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import useGetRTM from "@/hooks/useGetRTM";
+import useGetAllMessages from "@/hooks/useGetAllMessages";
 
 const Message = () => {
+  useGetAllMessages()
   useGetRTM()
   const { user, selectedUser } = useSelector((store) => store.auth);
 
