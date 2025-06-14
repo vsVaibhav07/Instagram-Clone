@@ -12,7 +12,7 @@ dotenv.config({})
 
 
 app.use(cors( {
-  origin:  ['http://localhost:5173', 'https://instagram-clone-alpha-mocha.vercel.app'],
+  origin:  ['http://localhost:5173', 'https://instagram-clone-two-psi.vercel.app/'],
   credentials: true, 
 }));
 app.use(cookieParser());
