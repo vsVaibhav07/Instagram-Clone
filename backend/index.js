@@ -7,16 +7,12 @@ import { app,server } from './socketIO/socketIO.js';
 import messageRoute from './routes/message.route.js';
 import dotenv from 'dotenv'
 import connectDb from './utils/db.js';
-import path from 'path';
 dotenv.config({})
 
 
-const __dirname=path.resolve();
-console.log(__dirname)
-
 
 app.use(cors( {
-  origin: 'http://localhost:5173',
+  origin:  ['http://localhost:5173', 'https://instagram-clone-alpha-mocha.vercel.app'],
   credentials: true, 
 }));
 app.use(cookieParser());
@@ -24,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 app.get('/', (req, res) => {
-  res.status(200).json({'message': 'Hello World!'});
+  res.status(200).json({'Backend is running!'});
 });
 
 
