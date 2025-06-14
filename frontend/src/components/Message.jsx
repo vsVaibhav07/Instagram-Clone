@@ -19,6 +19,11 @@ const Message = () => {
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  const filteredMessages = messages?.filter(
+  (msg) =>
+    (msg.senderId === user._id && msg.receiverId === selectedUser._id) ||
+    (msg.senderId === selectedUser._id && msg.receiverId === user._id)
+);
   
 
   return (
@@ -41,7 +46,7 @@ const Message = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {messages?.map((msg) => {
+        {filteredMessages?.map((msg) => {
           const isSender = msg.senderId === user._id;
           return (
             <div
