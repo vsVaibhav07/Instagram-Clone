@@ -3,7 +3,7 @@ import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { motion } from 'framer-motion';
-import { Instagram, Loader2 } from 'lucide-react';
+import {  Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ const Login = () => {
   const navigate=useNavigate();
   const {user}=useSelector(store=>store.auth);
   useEffect(()=>{
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/health`, {withCredentials:true})
     if(user){
     navigate('/');
     }
