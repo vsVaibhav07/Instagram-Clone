@@ -22,6 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Backend is running!' });
 });
+app.get('/health', (req, res) => {
+  res.status(200).send('Server is healthy!');
+});
 
 const PORT = process.env.PORT || 3000;
 
