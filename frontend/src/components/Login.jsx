@@ -1,9 +1,9 @@
-import React, { useState } from 'react'; 
+import { useState } from 'react'; 
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { motion } from 'framer-motion';
-import {  Loader2 } from 'lucide-react';
+import { Instagram, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
