@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import useGetRTM from "@/hooks/useGetRTM";
 import useGetAllMessages from "@/hooks/useGetAllMessages";
 
+
 const Message = () => {
   useGetAllMessages()
   useGetRTM()
@@ -29,6 +30,7 @@ const Message = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-3 pb-4">
+        
         <Avatar className="h-20 w-20">
           <AvatarImage
             src={selectedUser?.profilePicture || "/defaultDP.webp"}

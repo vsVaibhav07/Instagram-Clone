@@ -155,7 +155,7 @@ const Profile = () => {
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-1 sm:gap-4">
           {activeTab === "posts"
             ? userProfile?.posts?.map((p) => (
                 <div

@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { setAuthUser } from "@/redux/authSlice";
+import { setAuthUser, setSelectedUser } from "@/redux/authSlice";
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-const LeftSidebar = () => {
+const LeftSidebar = ({setIsSidebarOpen}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
@@ -47,6 +47,7 @@ const LeftSidebar = () => {
     if (item.text === "Logout") logoutHandler();
     else if (item.text === "Create Post") setOpenCreatePostDialog(true);
     else if (!item.notification) navigate(item.path);
+    setIsSidebarOpen(false);
   };
 
   const sidebarItems = [
@@ -151,7 +152,7 @@ const LeftSidebar = () => {
             <div
               key={index}
               className="relative flex items-center px-6 py-4 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleSideBarLinks(item)}
+              onClick={() => { setSelectedUser(null); handleSideBarLinks(item); }}
             >
               <div className="text-xl">{item.icon}</div>
               <span className="ml-3 text-sm font-medium">{item.text}</span>

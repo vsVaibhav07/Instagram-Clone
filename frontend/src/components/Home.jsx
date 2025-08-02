@@ -9,7 +9,7 @@ useGetAllPost();
 useGetSuggestedUsers();
 
   return (
-    <div className="flex w-full h-screen relative">
+    <div className="flex w-full h-[calc(92vh)] relative">
       <div className="flex-1 overflow-y-auto">
         <Feed />
         <Outlet/>

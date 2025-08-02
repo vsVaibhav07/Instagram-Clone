@@ -1,20 +1,37 @@
-import { Outlet } from 'react-router-dom'
-import LeftSidebar from './LeftSidebar'
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import LeftSidebar from './LeftSidebar';
+import { AlignJustify } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 const MainLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const {selectedUser}=useSelector((store) => store.auth);
+
   return (
-    <div className="flex w-full min-h-screen">
-      {/* Sidebar */}
-      <div className="hidden md:block md:w-64 fixed left-0 top-0 bottom-0">
-        <LeftSidebar />
+    <div className="flex w-full min-h-screen bg-gray-50 relative">
+      {/* Mobile Toggle Button */}
+      <button
+        className={ `${selectedUser ? "hidden" : ""} sm:hidden sticky h-10 top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md`}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <AlignJustify />
+      </button>
+
+      <div
+        className={`fixed top-0 left-0 h-full w-64 bg-white z-40 transition-transform duration-300 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } sm:translate-x-0 sm:block`}
+      >
+        <LeftSidebar setIsSidebarOpen={setIsSidebarOpen} />
       </div>
 
-      {/* Outlet */}
-      <div className="flex-1 md:ml-64 w-full">
+      {/* Main Content */}
+      <div className="flex-1 w-full sm:ml-64 p-4  ">
         <Outlet />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MainLayout
+export default MainLayout;

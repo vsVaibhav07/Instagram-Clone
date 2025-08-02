@@ -1,5 +1,5 @@
 import { setSelectedUser } from "@/redux/authSlice";
-import { MessageCircleMore } from "lucide-react";
+import { ArrowLeft, MessageCircleMore } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
@@ -43,8 +43,8 @@ const Messages = () => {
   },[])
 
   return (
-    <div className="flex w-full h-[calc(100vh)] overflow-hidden">
-      <section className="hidden md:flex flex-col w-1/3 border-r border-gray-200">
+    <div className=" flex w-full h-[calc(92vh)] overflow-hidden">
+      <section className={`${selectedUser?"hidden md:flex":"flex"} md:flex flex-col w-full md:w-1/3 border-r border-gray-200`}>
         <div className="px-6 py-4 text-xl font-bold border-b border-gray-100">
           {user.username}
         </div>
@@ -86,7 +86,8 @@ const Messages = () => {
       <div className="flex flex-col flex-1 bg-white relative">
         {selectedUser ? (
           <>
-            <div className="flex items-center gap-4 p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <div className={`flex items-center gap-4 p-4 border-b border-gray-200 sticky top-0 bg-white z-10`}>
+              <ArrowLeft className="cursor-pointer" onClick={() => dispatch(setSelectedUser(null))} />
               <Avatar className="h-12 w-12">
                 <AvatarImage
                   src={selectedUser?.profilePicture || "/defaultDP.webp"}
@@ -107,7 +108,7 @@ const Messages = () => {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-6">
+            <div className={`${selectedUser ? "flex-1" : "hidden"} overflow-y-auto px-4 py-6`}>
               <Message />
             </div>
 
@@ -132,8 +133,8 @@ const Messages = () => {
             </div>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-gray-500">
-            <div className="flex flex-col items-center gap-4">
+          <div className="hiddden md:flex flex-1 items-center justify-center text-gray-500">
+            <div className=" hidden md:flex flex-col items-center gap-4">
               <div className="rounded-full border-2 border-gray-400 p-5">
                 <MessageCircleMore className="w-10 h-10" />
               </div>
