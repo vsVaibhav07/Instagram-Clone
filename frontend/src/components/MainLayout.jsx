@@ -27,8 +27,8 @@ const MainLayout = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full sm:ml-64 p-4 h-screen overflow-y-scroll   ">
-        <Outlet />
+      <div onClick={()=>setIsSidebarOpen(false)} className="w-full sm:ml-64 p-4 h-screen overflow-y-scroll   ">
+        <Outlet  />
       </div>
     </div>
   );
