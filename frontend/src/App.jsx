@@ -43,7 +43,7 @@ const browserRouter = createBrowserRouter([
 function App() {
   const { user } = useSelector(store => store.auth);
   const dispatch = useDispatch();
-  const socketRef = useRef(null); // ✅ Keep reference across re-renders
+  const socketRef = useRef(null); 
 
   useEffect(() => {
     if (user && !socketRef.current) {
