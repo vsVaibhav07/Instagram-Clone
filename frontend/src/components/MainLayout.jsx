@@ -12,7 +12,7 @@ const MainLayout = () => {
     <div className="flex w-full min-h-screen bg-gray-50   relative">
     
       <button
-        className={ `${selectedUser ? "hidden" : ""} sm:hidden  h-10 fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md`}
+        className={ `${selectedUser || isSidebarOpen ? "hidden" : ""} sm:hidden  h-10 fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md`}
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         <AlignJustify />

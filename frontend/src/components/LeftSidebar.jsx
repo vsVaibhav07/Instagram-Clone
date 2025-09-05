@@ -7,6 +7,7 @@ import {
   PlusSquare,
   Search,
   TrendingUp,
+  X,
 } from "lucide-react";
 
 import { setAuthUser, setSelectedUser } from "@/redux/authSlice";
@@ -77,9 +78,13 @@ const LeftSidebar = ({setIsSidebarOpen}) => {
   return (
     <div className="w-64 h-screen bg-white shadow-md flex flex-col justify-between z-50 overflow-y-auto sticky top-0">
       <div>
-        <h1 className="flex items-center text-2xl font-bold p-4 gap-3 text-blue-600">
+        <div className="flex items-center justify-around">
+          <h1 className="flex items-center text-2xl font-bold p-4 gap-3 text-blue-600">
           <InstagramIcon /> Instagram
         </h1>
+        <X onClick={()=>setIsSidebarOpen(false)}   className="sm:hidden font-bold rounded-full w-10 hover:bg-gray-100 " />
+        </div>
+        
 
         {sidebarItems.map((item, index) => {
           const hasNotifications =
