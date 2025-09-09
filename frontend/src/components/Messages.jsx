@@ -38,9 +38,7 @@ const Messages = () => {
     }
   }
 
-  useEffect(()=>{
-    dispatch(setSelectedUser(null));
-  },[])
+  
 
   return (
     <div className=" flex w-full h-[calc(92vh)] overflow-hidden">

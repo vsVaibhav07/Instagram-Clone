@@ -6,11 +6,12 @@ import { useEffect, useState } from "react";
 import { Heart, MessageCircle } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
-import { setUserProfile } from "@/redux/authSlice";
+import { setSelectedUser, setUserProfile } from "@/redux/authSlice";
 
 const Profile = () => {
   const { id: userId } = useParams();
   useGetUserProfile(userId);
+
 
   const { userProfile, user } = useSelector((store) => store.auth);
   const isOwnProfile = user?._id === userId;
@@ -19,6 +20,8 @@ const Profile = () => {
   );
   const [activeTab, setActiveTab] = useState("posts");
   const dispatch = useDispatch();
+
+ 
 
   useEffect(() => {
     if (user && userProfile) {
@@ -80,14 +83,15 @@ const Profile = () => {
               </div>
             ) : isFollowing ? (
               <div
-                onClick={() => handleFollowUnfollow()}
                 className="flex gap-2"
               >
-                <button className="px-4 py-1 text-sm bg-slate-200 rounded hover:bg-blue-500 hover:text-white">
+                <button onClick={() => handleFollowUnfollow()} className="px-4 py-1 text-sm bg-slate-200 rounded hover:bg-blue-500 hover:text-white">
                   Unfollow
                 </button>
-                <button className="px-4 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
-                  Message
+                <button onClick={()=>dispatch(setSelectedUser(userProfile))} className="px-4 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                  
+                  <Link to={"/messages"}>Message</Link>
+                  
                 </button>
               </div>
             ) : (

@@ -1,7 +1,7 @@
-import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import SuggestedUser from "./SuggestedUser";
 
 const RightSidebar = () => {
   const { user, suggestedUsers } = useSelector((store) => store.auth);
@@ -43,34 +43,7 @@ const RightSidebar = () => {
       {/* Suggested Users List */}
       <div className="space-y-4">
         {suggestedUsers?.map((suggestedUser) => (
-          <div
-            key={suggestedUser._id}
-            className="flex items-center justify-between"
-          >
-            <Link
-              to={`/profile/${suggestedUser._id}`}
-              className="flex items-center gap-3 hover:opacity-90"
-            >
-              <Avatar className="h-9 w-9">
-                <AvatarImage
-                  src={suggestedUser?.profilePicture || "/defaultDP.webp"}
-                  alt="User_dp"
-                />
-                <AvatarFallback>DP</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-medium text-sm">
-                  {suggestedUser?.username}
-                </span>
-                <span className="text-xs text-gray-400">
-                  {suggestedUser?.bio || "New to Instagram"}
-                </span>
-              </div>
-            </Link>
-            <button className="text-xs font-semibold text-blue-500 hover:text-blue-700">
-              Follow
-            </button>
-          </div>
+          <SuggestedUser key={suggestedUser._id} suggestedUser={suggestedUser} />
         ))}
       </div>
     </div>

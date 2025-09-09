@@ -1,8 +1,8 @@
-import User from "../models/user.model.js";
-import Post from "../models/post.model.js"
-import cloudinary from '../utils/cloudinary.js';
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
+import cloudinary from '../utils/cloudinary.js';
 import getDataUri from "../utils/datauri.js";
  
 
@@ -206,27 +206,30 @@ export const followOrUnfollow= async (req, res) => {
                 success:false
             })
         } 
-        const isFollowing=user.following.includes(jiskoFollowKaruga);  //checks followinng me hai ya nahi
+        const isFollowing=user.following.includes(jiskoFollowKaruga);  
         if(isFollowing){
-            // Unfollow
             await Promise.all([
                 User.updateOne({_id:followKarneWala},{$pull:{following:jiskoFollowKaruga}}),
                 User.updateOne({_id:jiskoFollowKaruga},{$pull:{followers:followKarneWala}})
             ])
+             const UpdatedUser=await User.findById(followKarneWala);
             return res.status(200).json({
                 message:"Unfollowed Successfully",
-                success:true
+                success:true,
+                user:UpdatedUser
             })
         }
         else{
-            // Follow
+           
             await Promise.all([
                 User.updateOne({_id:followKarneWala},{$push:{following:jiskoFollowKaruga}}),
                 User.updateOne({_id:jiskoFollowKaruga},{$push:{followers:followKarneWala}})
             ])
+            const updatedUser=await User.findById(followKarneWala).select("-password");
             return res.status(200).json({
                 message:"Followed Successfully",
-                success:true
+                success:true,
+                user:updatedUser
             })
         } 
 
