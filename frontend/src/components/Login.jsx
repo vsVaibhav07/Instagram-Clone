@@ -1,72 +1,84 @@
-import { useState } from 'react'; 
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { motion } from 'framer-motion';
-import { Instagram, Loader2 } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { setAuthUser } from '@/redux/authSlice';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { Label } from "./ui/label";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { motion } from "framer-motion";
+import { Instagram, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
+import { useEffect } from "react";
 
 const Login = () => {
-  const navigate=useNavigate();
-  const {user}=useSelector(store=>store.auth);
-  useEffect(()=>{
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/health`, {withCredentials:true})
-    if(user){
-    navigate('/');
+  const navigate = useNavigate();
+  const { user } = useSelector((store) => store.auth);
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/health`, {
+      withCredentials: true,
+    });
+    if (user) {
+      navigate("/");
     }
-  },[])
+  }, []);
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
-  const dispatch=useDispatch();
-  const [loading,setLoading]=useState(false);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-        setLoading(true);
-        const res=await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/user/login`, formData,{headers:{'Content-Type': 'application/json'},withCredentials:true});
-        if(res.data.success){
-          
-          dispatch(setAuthUser(res.data.user));
-            navigate('/');
-            toast.success(res.data.message);
-            setFormData({
-                email: '',
-                password: ''
-            });
+      setLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/user/login`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
+      );
+      if (res.data.success) {
+        dispatch(setAuthUser(res.data.user));
+        navigate("/");
+        toast.success(res.data.message);
+        setFormData({
+          email: "",
+          password: "",
+        });
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'An error occurred');
+      toast.error(error.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-blue-200 px-4">
-      <motion.form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md space-y-6 border border-gray-200"
-        initial={{ opacity: 0, y: 50 }}
+    <div className="h-screen w-screen  flex flex-col  items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-blue-200 px-4">
+      <motion.div
+      initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+         className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md space-y-6 border border-gray-200">
+        <form
+        onSubmit={handleSubmit}
+        className="  w-full max-w-md space-y-6 "
+        
       >
+
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 text-indigo-600">
             <Instagram className="h-6 w-6" />
@@ -74,8 +86,6 @@ const Login = () => {
           </div>
           <p className="text-gray-500 text-sm">Login to Your Account</p>
         </div>
-
-    
 
         <div>
           <Label htmlFor="email" className="text-sm font-medium">
@@ -109,31 +119,35 @@ const Login = () => {
           />
         </div>
 
-        {
-            loading ?(
-                <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold tracking-wide rounded-lg transition" >
-                    <Loader2 className="animate-spin h-4 w-4 mr-2" />
-                    Logging in...
-                </Button>
-            ):
-            (
-                 <Button
-          type="submit"
-          className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold tracking-wide rounded-lg transition"
-        >
-          Login
-        </Button>
+        {loading ? (
+          <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold tracking-wide rounded-lg transition">
+            <Loader2 className="animate-spin h-4 w-4 mr-2" />
+            Logging in...
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold tracking-wide rounded-lg transition"
+          >
+            Login
+          </Button>
+        )}
+        
+      </form>
+      <div>
+          <p className="cursor-pointer text-blue-400">
+            <Link to="/forget-password">forget password</Link>
+            </p>
 
-            )
-
-        }
-
-       
-
-        <p className="text-center text-sm text-gray-600">
-          Don't have an account? <Link to="/signup" className="text-indigo-600 hover:underline">Signup</Link>
-        </p>
-      </motion.form>
+          <p className="text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-indigo-600 hover:underline">
+              Signup
+            </Link>
+          </p>
+        </div>
+      </motion.div>
+      
     </div>
   );
 };

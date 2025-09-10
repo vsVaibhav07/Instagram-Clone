@@ -38,8 +38,6 @@ const Messages = () => {
     }
   }
 
-  
-
   return (
     <div className=" flex w-full h-[calc(92vh)] overflow-hidden">
       <section className={`${selectedUser?"hidden md:flex":"flex"} md:flex flex-col w-full md:w-1/3 border-r border-gray-200`}>

@@ -17,6 +17,9 @@ import { setOnlineUsers } from './redux/chatSlice';
 import { useEffect, useRef } from 'react';
 import { setLikeNotification } from './redux/RTNSlice';
 import ProtectedRoute from './components/ProtectedRoute';
+import ForgetPassword from './components/ForgetPassword';
+import ResetPassword from './components/ResetPassword';
+import VerifyOtp from './components/VerifyOtp';
 
 const browserRouter = createBrowserRouter([
   {
@@ -37,6 +40,9 @@ const browserRouter = createBrowserRouter([
   },
   { path: '/signup', element: <Signup /> },
   { path: '/login', element: <Login /> },
+   {path:'/forget-password',element:<ForgetPassword/> },
+    {path:'/verify-email',element:<VerifyOtp/> },
+     {path:'/reset-password',element:<ResetPassword/> },
   { path: '*', element: <ProtectedRoute><MainLayout /></ProtectedRoute> }
 ]);
 
