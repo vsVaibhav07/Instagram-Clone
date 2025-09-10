@@ -2,7 +2,7 @@ import User from "../models/user.model.js";
 import OTP from "../models/otp.model.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs";
-import  { sendEmail } from "../config/mailer.js";
+import { sendEmail } from "../config/mailer.js";
 
 
 export const sendOtp = async (req, res) => {
@@ -19,7 +19,7 @@ export const sendOtp = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
     const record = await OTP.findOne({ email });
     if (record) {
-        await OTP.deleteMany({ email })
+      await OTP.deleteMany({ email })
     }
 
     await OTP.create({
@@ -34,14 +34,9 @@ export const sendOtp = async (req, res) => {
     // })
 
     const otpToken = await jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: '5m' })
-    res.cookie("otpSent", true, {
-      httpOnly: false,
-      secure:true,
-      sameSite: "None",
-      maxAge: 5 * 60 * 1000,
-    });
 
-    return res.cookie('otpToken', otpToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 1 * 5 * 60 * 1000 }).json({
+
+    return res.cookie('otpToken', otpToken, { httpOnly: false, secure: true, sameSite: 'None', maxAge: 1 * 5 * 60 * 1000 }).json({
       success: true,
       message: "OTP sent to the email"
     }
@@ -86,10 +81,10 @@ export const verifyOtp = async (req, res) => {
       });
     }
     await OTP.deleteOne({ _id: record._id });
-       res.clearCookie("otpSent");
-       res.cookie("otpVerified", true, {
+    res.clearCookie("otpSent");
+    res.cookie("otpVerified", true, {
       httpOnly: false,
-      sameSite: "strict",
+      sameSite: "None",
       maxAge: 5 * 60 * 1000,
     });
 
@@ -114,7 +109,7 @@ export const updatePassword = async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
 
     const token = req.cookies.otpToken;
-     const otpVerified = req.cookies.otpVerified;
+    const otpVerified = req.cookies.otpVerified;
     if (!token || !otpVerified) {
       return res.status(400).json({
         success: false,
