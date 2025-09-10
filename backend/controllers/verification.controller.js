@@ -36,7 +36,8 @@ export const sendOtp = async (req, res) => {
     const otpToken = await jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: '5m' })
     res.cookie("otpSent", true, {
       httpOnly: false,
-      sameSite: "strict",
+      secure:true,
+      sameSite: "None",
       maxAge: 5 * 60 * 1000,
     });
 
