@@ -7,12 +7,7 @@ import axios from "axios";
 
 const VerifyOtp = () => {
 
-  const hasOtpToken = document.cookie.includes("otpSent=")
-   
-
-  if (!hasOtpToken) {
-    return <Navigate to="/forget-password" replace />;
-  }
+  
 
   const [otp, setOtp] = useState(["", "", "", "","",""]);
   const [loading,setLoading]=useState(false)

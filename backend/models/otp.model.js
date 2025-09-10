@@ -9,6 +9,10 @@ const OTPSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    status:{
+        type:String,
+        enum:["sent","verified"]
+    },
     createdAt:{
         type:Date,
         default:Date.now,

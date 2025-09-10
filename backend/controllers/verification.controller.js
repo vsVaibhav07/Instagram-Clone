@@ -1,57 +1,51 @@
 import User from "../models/user.model.js";
 import OTP from "../models/otp.model.js";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "../config/mailer.js";
-
 
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         message: "Email is not registered!",
-        success: false
-      })
+        success: false,
+      });
     }
+
     const otp = Math.floor(100000 + Math.random() * 900000);
-    const record = await OTP.findOne({ email });
-    if (record) {
-      await OTP.deleteMany({ email })
-    }
+    await OTP.deleteMany({ email });
 
-    await OTP.create({
-      email, otp
-    })
+    await OTP.create({ email, otp, status: "sent" });
 
-    // await sendEmail({
-    //   to:email,
-    //   sub:"Your OTP Code",
-    //   template:"otpEmail.ejs",
-    //   data:{name:user.username, otp, expiresMinutes: 5}
-    // })
+     const otpToken = jwt.sign({ email, }, process.env.SECRET_KEY, { expiresIn: "5m" });
+    await sendEmail({
+      to: email,
+      sub: "Your OTP Code",
+      template: "otpEmail.ejs",
+      data: { name: user.username, otp, expiresMinutes: 5 }
+    });
+   
 
-    const otpToken = await jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: '5m' })
-
-
-    return res.cookie('otpToken', otpToken, { httpOnly: false, secure: true, sameSite: 'None', maxAge: 1 * 5 * 60 * 1000 }).json({
+    return res.cookie("otpToken", otpToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 5 * 60 * 1000,
+    }).json({
       success: true,
-      message: "OTP sent to the email"
-    }
-    )
+      message: "OTP sent to the email",
+    });
   } catch (error) {
-    console.log('error:', error)
-    return res.error
+    console.log("sendOtp error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
-}
-
+};
 
 export const verifyOtp = async (req, res) => {
-
-
-
   try {
     const { otp } = req.body;
     const token = req.cookies.otpToken;
@@ -59,114 +53,70 @@ export const verifyOtp = async (req, res) => {
     if (!token) {
       return res.status(401).json({ success: false, message: "OTP expired" });
     }
+
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
-
-
     const email = decoded.email;
 
-    const record = await OTP.findOne({ email });
+    const record = await OTP.findOne({ email, status: "sent" });
     if (!record) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP expired ",
-      });
+      return res.status(400).json({ success: false, message: "OTP expired" });
     }
-
 
     if (record.otp !== otp) {
-      return res.status(401).json({
-        success: false,
-        message: "Wrong OTP",
-      });
+      return res.status(401).json({ success: false, message: "Wrong OTP" });
     }
-    await OTP.deleteOne({ _id: record._id });
-    res.clearCookie("otpSent");
-    res.cookie("otpVerified", true, {
-      httpOnly: false,
-      sameSite: "None",
-      maxAge: 5 * 60 * 1000,
-    });
 
-    return res.status(200).json({
-      success: true,
-      message: "OTP verified successfully",
-    });
+    record.status = "verified";
+    await record.save();
+
+    return res.status(200).json({ success: true, message: "OTP verified successfully" });
   } catch (error) {
     console.error("verifyOtp error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-
 export const updatePassword = async (req, res) => {
-
-
   try {
     const { newPassword, confirmPassword } = req.body;
-
     const token = req.cookies.otpToken;
-    const otpVerified = req.cookies.otpVerified;
-    if (!token || !otpVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP expired!"
-      })
+
+    if (!token) {
+      return res.status(400).json({ success: false, message: "OTP expired!" });
     }
 
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const email = decoded.email;
+
+    const otpRecord = await OTP.findOne({ email, status: "verified" });
+    if (!otpRecord) {
+      return res.status(400).json({ success: false, message: "OTP not verified" });
+    }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Password and Confirm Password must be same",
-      });
+      return res.status(400).json({ success: false, message: "Password and Confirm Password must be same" });
     }
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.SECRET_KEY);
-    } catch (err) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid or expired OTP token",
-      });
-    }
-    const email = decoded.email;
+
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
     const isSamePassword = await bcrypt.compare(newPassword, user.password);
     if (isSamePassword) {
-      return res.status(400).json({
-        success: false,
-        message: "New password cannot be same as old password",
-      });
+      return res.status(400).json({ success: false, message: "New password cannot be same as old password" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
     user.password = hashedPassword;
     await user.save();
 
+    await OTP.deleteMany({ email });
     res.clearCookie("otpToken");
-    res.clearCookie("otpVerified");
 
-    return res.status(200).json({
-      success: true,
-      message: "Password updated successfully.",
-    });
+    return res.status(200).json({ success: true, message: "Password updated successfully." });
   } catch (error) {
-    console.error("Update password error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later.",
-    });
+    console.error("updatePassword error:", error);
+    return res.status(500).json({ success: false, message: "Server error. Please try again later." });
   }
 };

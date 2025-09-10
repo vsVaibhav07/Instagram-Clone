@@ -9,12 +9,6 @@ import { toast } from "sonner";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
-   const hasOtpToken = document.cookie.includes("otpVerified=")
-   
-
-  if (!hasOtpToken) {
-    return <Navigate to="/forget-password" replace />;
-  }
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
