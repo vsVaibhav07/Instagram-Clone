@@ -26,12 +26,12 @@ export const sendOtp = async (req, res) => {
       email, otp
     })
 
-    await sendEmail({
-      to:email,
-      sub:"Your OTP Code",
-      template:"otpEmail.ejs",
-      data:{name:user.username, otp, expiresMinutes: 5}
-    })
+    // await sendEmail({
+    //   to:email,
+    //   sub:"Your OTP Code",
+    //   template:"otpEmail.ejs",
+    //   data:{name:user.username, otp, expiresMinutes: 5}
+    // })
 
     const otpToken = await jwt.sign({ email }, process.env.SECRET_KEY, { expiresIn: '5m' })
     res.cookie("otpSent", true, {
